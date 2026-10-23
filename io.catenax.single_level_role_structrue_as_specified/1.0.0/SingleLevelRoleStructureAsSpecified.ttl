@@ -1,0 +1,76 @@
+#######################################################################
+# Copyright (c) 2026 Deutsches Zentrum für Luft- und Raumfahrt e.V. (DLR)
+# Copyright (c) 2026 COMPANY A
+# Copyright (c) 2026 COMPANY B
+# Copyright (c) 2026 COMPANY C
+# Copyright (c) 2026 COMPANY D
+#
+# See the NOTICE file(s) distributed with this work for additional
+# information regarding copyright ownership.
+#
+# This work is made available under the terms of the
+# Creative Commons Attribution 4.0 International (CC-BY-4.0) license,
+# which is available at
+# https://creativecommons.org/licenses/by/4.0/legalcode.
+#
+# SPDX-License-Identifier: CC-BY-4.0
+#######################################################################
+
+@prefix samm: <urn:samm:org.eclipse.esmf.samm:meta-model:2.1.0#> .
+@prefix samm-c: <urn:samm:org.eclipse.esmf.samm:characteristic:2.1.0#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+@prefix : <urn:samm:io.catenax.single_level_role_structure_as_specified:1.0.0#> .
+@prefix ext-ic: <urn:samm:io.catenax.shared.industry_core.common:1.0.0#> .
+@prefix ext-number: <urn:samm:io.catenax.shared.business_partner_number:2.0.0#> .
+
+:SingleLevelRoleStructureAsSpecified a samm:Aspect ;
+   samm:preferredName "Single Level Role Structure as Specified"@en ;
+   samm:description "The Single Level Role Structure as Specified describes the immediate decomposition of a parent PartRole into child PartRoles in the As-Specified lifecycle context. It represents one structural level down only and does not include lower-level child roles recursively. The aspect is attached to the digital twin of the parent PartRole and references the child PartRole digital twins that are specified as direct structural elements of the parent role."@en ;
+   samm:properties ( 
+      ext-ic:globalAssetId 
+      :ownerId
+      :childRoles 
+      ) ;
+   samm:operations ( ) ;
+   samm:events ( ) .
+
+:ownerId a samm:Property;
+    samm:preferredName "Owner ID"@en;
+    samm:description "The Business Partner Number, BPNL, of the initial issuer of the single level RoleStructureAsSpecified"@en;
+    samm:characteristic ext-number:BpnlTrait;
+    samm:exampleValue "BPNL1234567890LR".  
+
+:childRoles a samm:Property ;
+   samm:preferredName "Child Roles"@en ;
+   samm:description "Set of child PartRoles that are specified as direct structural elements of the parent PartRole, one structural level down."@en ;
+   samm:characteristic :SetOfChildRolesCharacteristic . 
+
+#######################################################################
+# Child Roles Specifics
+#######################################################################
+
+:SetOfChildRolesCharacteristic a samm-c:Set ;
+   samm:preferredName "Set of Child Roles Characteristic"@en ;
+   samm:description "Set of child-role relations of the parent PartRole."@en ;
+   samm:dataType :ChildRoleRelationEntity .
+
+:ChildRoleRelationEntity a samm:Entity ;
+   samm:preferredName "Child Role Relation Entity"@en ;
+   samm:description "Entity encapsulating the metadata of the specified structural relation between the parent PartRole and a direct child PartRole."@en ;
+   samm:properties (
+      ext-ic:globalAssetId
+      :createdOn
+      [ samm:property :lastModifiedOn; samm:optional true ]
+   ) .
+
+:createdOn a samm:Property ;
+   samm:preferredName "Created On"@en ;
+   samm:description "Timestamp when the structural relation between the parent PartRole and the child PartRole was created."@en ;
+   samm:characteristic samm-c:Timestamp ;
+   samm:exampleValue "2025-02-03T14:48:54.709Z"^^xsd:dateTime .
+
+:lastModifiedOn a samm:Property ;
+   samm:preferredName "Last Modified On"@en ;
+   samm:description "Timestamp when the structural relation between the parent PartRole and the child PartRole was last modified."@en ;
+   samm:characteristic samm-c:Timestamp ;
+   samm:exampleValue "2025-03-03T14:48:54.709Z"^^xsd:dateTime .
