@@ -1,0 +1,204 @@
+#######################################################################
+# DRAFT / FOR DISCUSSION - NOT A PUBLISHED CATENA-X SEMANTIC MODEL
+# PartRoleCandidateSolution, version 1.0.0 (proposed)
+# SPDX-License-Identifier: CC-BY-4.0
+#
+# Design scope:
+# - A candidate may be conceptual OR optionally reference an existing PartType.
+# - The candidate's identity is separate from that of the PartRole and PartType.
+# - Assessment and decision are tied to a named engineering context.
+# - PartRole <-> PartType is a contextual association, not identity refinement.
+# - No PartInstances, BoM decomposition, requirements, site, or lifecycle master data.
+#
+# Open design questions and business constraints: see companion review notes.
+#######################################################################
+
+@prefix samm: <urn:samm:org.eclipse.esmf.samm:meta-model:2.1.0#> .
+@prefix samm-c: <urn:samm:org.eclipse.esmf.samm:characteristic:2.1.0#> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+@prefix : <urn:samm:io.catenax.part_role_candidate_solution:1.0.0#> .
+@prefix ext-ic: <urn:samm:io.catenax.shared.industry_core.common:1.0.0#> .
+@prefix ext-uuid: <urn:samm:io.catenax.shared.uuid:2.1.0#> .
+@prefix ext-number: <urn:samm:io.catenax.shared.business_partner_number:2.0.0#> .
+
+#######################################################################
+# PartRole anchor and candidate collection
+#######################################################################
+
+:PartRoleCandidateSolution a samm:Aspect ;
+   samm:preferredName "Part Role Candidate Solution"@en ;
+   samm:description "Describes possible solutions for fulfilling the PartRole identified by globalAssetId. Candidate solutions may exist before a PartType is available and may optionally reference an existing PartType. Assessment and selection are recorded for explicitly identified engineering contexts. Candidate references do not constitute identities of the PartRole or PartType."@en ;
+   samm:properties ( ext-ic:globalAssetId :candidateSolutions ) ;
+   samm:operations ( ) ;
+   samm:events ( ) .
+
+:candidateSolutions a samm:Property ;
+   samm:preferredName "Candidate Solutions"@en ;
+   samm:description "Set of solution alternatives proposed for the associated PartRole. A candidate is identified within this PartRole independently of evaluation outcomes in particular contexts."@en ;
+   samm:characteristic :CandidateSolutionsCharacteristic .
+
+:CandidateSolutionsCharacteristic a samm-c:Set ;
+   samm:preferredName "Candidate Solutions Characteristic"@en ;
+   samm:description "Unordered, non-duplicated collection of candidate solution records."@en ;
+   samm:dataType :CandidateSolutionEntity .
+
+:CandidateSolutionEntity a samm:Entity ;
+   samm:preferredName "Candidate Solution Entity"@en ;
+   samm:description "One owner-scoped solution alternative, which may be conceptual or may refer to an existing PartType. The candidate record is stable across multiple context-specific assessments."@en ;
+   samm:properties (
+      :candidateSolutionId
+      :name
+      [ samm:property :description; samm:optional true ]
+      [ samm:property :providerId; samm:optional true ]
+      [ samm:property :conceptReference; samm:optional true ]
+      [ samm:property :referencedPartTypeGlobalAssetId; samm:optional true ]
+      [ samm:property :contextAssessments; samm:optional true ]
+   ) .
+
+:candidateSolutionId a samm:Property ;
+   samm:preferredName "Candidate Solution Identifier"@en ;
+   samm:description "Identifier assigned to this candidate within the associated PartRole. It identifies the candidate solution record, not a PartType or a new digital twin. It must be unique amongst the candidates of the same PartRole."@en ;
+   samm:characteristic :LocalIdentifierCharacteristic ;
+   samm:exampleValue "CAND-0001" .
+
+:name a samm:Property ;
+   samm:preferredName "Candidate Solution Name"@en ;
+   samm:description "Human-readable name of the proposed solution alternative."@en ;
+   samm:characteristic samm-c:Text ;
+   samm:exampleValue "Aluminium bracket concept" .
+
+:description a samm:Property ;
+   samm:preferredName "Candidate Solution Description"@en ;
+   samm:description "Human-readable description of the technical idea or part-related solution alternative."@en ;
+   samm:characteristic samm-c:Text ;
+   samm:exampleValue "Conceptual bracket solution for mounting the energy storage component." .
+
+:providerId a samm:Property ;
+   samm:preferredName "Proposal Provider Identifier"@en ;
+   samm:description "Optional BPNL of the party proposing or supplying information about this candidate. It does not necessarily denote the manufacturer of a referenced PartType, nor the owner of the PartRole."@en ;
+   samm:characteristic ext-number:BpnlTrait ;
+   samm:exampleValue "BPNL222233334444" .
+
+:conceptReference a samm:Property ;
+   samm:preferredName "Concept Reference"@en ;
+   samm:description "Optional resolvable reference to a concept representation, design model, or technical document. It need not identify a PartType digital twin."@en ;
+   samm:characteristic samm-c:ResourcePath ;
+   samm:exampleValue "https://example.org/engineering/concepts/CAND-0001"^^xsd:anyURI .
+
+:referencedPartTypeGlobalAssetId a samm:Property ;
+   samm:preferredName "Referenced Part Type Global Asset Identifier"@en ;
+   samm:description "Optional globalAssetId of an existing PartType digital twin associated with this candidate. The referenced PartType remains independently identified; this association does not copy PartRole-specific Asset IDs to the PartType. Absence of a reference permits candidates before an identified PartType exists."@en ;
+   samm:characteristic ext-uuid:UuidV4Trait ;
+   samm:exampleValue "urn:uuid:a1111111-b222-4333-8444-e55555555555" .
+
+:LocalIdentifierCharacteristic a samm:Characteristic ;
+   samm:preferredName "Local Identifier Characteristic"@en ;
+   samm:description "String identifier scoped by its owning business object. It is not a globally unique asset identifier."@en ;
+   samm:dataType xsd:string .
+
+#######################################################################
+# Context-specific assessment and selection
+#######################################################################
+
+:contextAssessments a samm:Property ;
+   samm:preferredName "Context Assessments"@en ;
+   samm:description "Optional assessments and decisions for this candidate in one or more specified engineering contexts. A candidate can exist without any assessment. Separate contexts may yield different outcomes."@en ;
+   samm:characteristic :ContextAssessmentsCharacteristic .
+
+:ContextAssessmentsCharacteristic a samm-c:Set ;
+   samm:preferredName "Context Assessments Characteristic"@en ;
+   samm:description "Set of assessments that relate a candidate to engineering contexts and their evaluations and decisions."@en ;
+   samm:dataType :ContextAssessmentEntity .
+
+:ContextAssessmentEntity a samm:Entity ;
+   samm:preferredName "Context Assessment Entity"@en ;
+   samm:description "Assessment and selection decision regarding one candidate solution for one named engineering context. Evaluation and selection are distinct dimensions and neither represents lifecycle approval or release of a PartType."@en ;
+   samm:properties (
+      :engineeringContext
+      :evaluationStatus
+      :decisionStatus
+      [ samm:property :assessmentNote; samm:optional true ]
+      [ samm:property :decisionReference; samm:optional true ]
+   ) .
+
+:engineeringContext a samm:Property ;
+   samm:preferredName "Engineering Context"@en ;
+   samm:description "Context in which the suitability and selection of the candidate are assessed. Distinguishes decisions taken for different variants, derivatives, or configurations."@en ;
+   samm:characteristic :EngineeringContextCharacteristic .
+
+:EngineeringContextCharacteristic a samm:Characteristic ;
+   samm:preferredName "Engineering Context Characteristic"@en ;
+   samm:description "Characteristic encapsulating a reference to the applicable engineering context and optional query-friendly identifiers."@en ;
+   samm:dataType :EngineeringContextEntity .
+
+:EngineeringContextEntity a samm:Entity ;
+   samm:preferredName "Engineering Context Entity"@en ;
+   samm:description "Identifiers used to distinguish the engineering applicability of an assessment. The contextId is mandatory; variant, derivative, and configuration identifiers are optional descriptive keys in the applicable engineering namespace."@en ;
+   samm:properties (
+      :contextId
+      [ samm:property :variantId; samm:optional true ]
+      [ samm:property :derivativeId; samm:optional true ]
+      [ samm:property :configurationId; samm:optional true ]
+   ) .
+
+:contextId a samm:Property ;
+   samm:preferredName "Engineering Context Identifier"@en ;
+   samm:description "Identifier for the engineering context in which this assessment is made. This should resolve within an agreed engineering namespace; it is not a PartRole/PartType asset ID. Unqualified default/global applicability is intentionally not implied."@en ;
+   samm:characteristic :LocalIdentifierCharacteristic ;
+   samm:exampleValue "VEHICLE-A-VARIANT-1" .
+
+:variantId a samm:Property ;
+   samm:preferredName "Variant Identifier"@en ;
+   samm:description "Optional variant identifier relevant to the assessment context. The identifier must be interpreted in the namespace of the applicable engineering context."@en ;
+   samm:characteristic :LocalIdentifierCharacteristic ;
+   samm:exampleValue "VARIANT-A" .
+
+:derivativeId a samm:Property ;
+   samm:preferredName "Derivative Identifier"@en ;
+   samm:description "Optional engineered-system or vehicle derivative identifier relevant to the assessment context."@en ;
+   samm:characteristic :LocalIdentifierCharacteristic ;
+   samm:exampleValue "DERIVATIVE-B" .
+
+:configurationId a samm:Property ;
+   samm:preferredName "Configuration Identifier"@en ;
+   samm:description "Optional configuration identifier relevant to the assessment context. Configuration effectivity and release are governed outside this aspect."@en ;
+   samm:characteristic :LocalIdentifierCharacteristic ;
+   samm:exampleValue "CFG-010" .
+
+:evaluationStatus a samm:Property ;
+   samm:preferredName "Evaluation Status"@en ;
+   samm:description "Technical evaluation outcome for a candidate in this engineering context. It does not indicate whether the candidate has been selected or confirmed."@en ;
+   samm:characteristic :EvaluationStatusCharacteristic ;
+   samm:exampleValue "underEvaluation" .
+
+:EvaluationStatusCharacteristic a samm-c:Enumeration ;
+   samm:preferredName "Evaluation Status Characteristic"@en ;
+   samm:description "Proposed evaluation vocabulary. Technical assessment is distinct from a subsequent selection decision."@en ;
+   samm:dataType xsd:string ;
+   samm-c:values ( "notEvaluated" "underEvaluation" "suitable" "unsuitable" ) .
+
+:decisionStatus a samm:Property ;
+   samm:preferredName "Decision Status"@en ;
+   samm:description "Selection or confirmation decision for a candidate in this engineering context. A confirmed candidate with an existing PartType reference may support a confirmed PartRole-to-PartType association, but this is not PartType approval/release."@en ;
+   samm:characteristic :DecisionStatusCharacteristic ;
+   samm:exampleValue "selected" .
+
+:DecisionStatusCharacteristic a samm-c:Enumeration ;
+   samm:preferredName "Decision Status Characteristic"@en ;
+   samm:description "Proposed decision vocabulary: open has no outcome, notSelected excludes the candidate from the selected solutions for the context, selected indicates the current preferred solution, confirmed expresses a stronger role-to-solution commitment, withdrawn denotes that the proposal was withdrawn. Exact governance semantics require standardization."@en ;
+   samm:dataType xsd:string ;
+   samm-c:values ( "open" "notSelected" "selected" "confirmed" "withdrawn" ) .
+
+:assessmentNote a samm:Property ;
+   samm:preferredName "Assessment Note"@en ;
+   samm:description "Optional human-readable explanation of the assessment or decision in this engineering context."@en ;
+   samm:characteristic samm-c:Text ;
+   samm:exampleValue "Selected because the candidate fulfils the packaging constraints for this variant." .
+
+:decisionReference a samm:Property ;
+   samm:preferredName "Decision Reference"@en ;
+   samm:description "Optional resolvable reference to an external engineering decision, evaluation report, or evidence record; this aspect does not prescribe its schema or repeat the evidence."@en ;
+   samm:characteristic samm-c:ResourcePath ;
+   samm:exampleValue "https://example.org/engineering/decisions/DEC-0042"^^xsd:anyURI .
