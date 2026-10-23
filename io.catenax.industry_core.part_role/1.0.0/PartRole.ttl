@@ -1,0 +1,108 @@
+#######################################################################
+# Copyright (c) 2026 Deutsches Zentrum für Luft- und Raumfahrt e.V. (DLR)
+# Copyright (c) 2026 COMPANY B
+# Copyright (c) 2026 COMPANY C
+# Copyright (c) 2026 COMPANY E
+#
+# See the NOTICE file(s) distributed with this work for additional
+# information regarding copyright ownership.
+#
+# This work is made available under the terms of the
+# Creative Commons Attribution 4.0 International (CC-BY-4.0) license,
+# which is available at
+# https://creativecommons.org/licenses/by/4.0/legalcode.
+#
+# SPDX-License-Identifier: CC-BY-4.0
+#######################################################################
+
+@prefix samm: <urn:samm:org.eclipse.esmf.samm:meta-model:2.1.0#> .
+@prefix samm-c: <urn:samm:org.eclipse.esmf.samm:characteristic:2.1.0#> .
+@prefix samm-e: <urn:samm:org.eclipse.esmf.samm:entity:2.1.0#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+@prefix : <urn:samm:io.catenax.industry_core.part_role:1.0.0#> .
+
+:PartRole a samm:Aspect ;
+   samm:preferredName "Part Role"@en ;
+   samm:description "Describes the PartRole as an identifiable intended realization within a specific engineered-system context."@en ;
+   samm:version "1.0.0" ;
+   samm:properties ( :partRoleInformation 
+                     :globalAssetId ) ;
+   samm:operations ( ) ;
+   samm:events ( ) .
+
+:partRoleInformation a samm:Property ;
+   samm:preferredName "Part Role Information"@en ;
+   samm:description "Information describing the PartRole as an intended realization in the context of an engineered system."@en ;
+   samm:characteristic :PartRoleInformationCharacteristic .
+
+:globalAssetId a samm:Property ;
+   samm:preferredName "Global asset ID"@en ;
+   samm:description "The globally unique identifier (UUID v4) of the PartRole digital twin within the dataspace."@en ;
+   samm:characteristic :UuidV4Trait ;
+   samm:exampleValue "055c1128-0375-47c8-98de-7cf802c3241d" .
+
+:PartRoleInformationCharacteristic a samm:Characteristic ;
+   samm:preferredName "Part Role Information Characteristic"@en ;
+   samm:description "The characteristics of the PartRole."@en ;
+   samm:dataType :PartRoleInformationEntity .
+
+:PartIdCharacteristic a samm:Characteristic;
+   samm:preferredName "Role ID characteristic"@en;
+   samm:description "A string identifier assigned to a PartRole within its owner’s engineering context."@en;
+   samm:dataType xsd:string.
+
+:PartRoleInformationEntity a samm:Entity ;
+   samm:preferredName "Part Role Information Entity"@en ;
+   samm:description "Encapsulation for data related to the PartRole."@en ;
+   samm:properties ( 
+      :ownerRoleId 
+      :nameAtOwner 
+      [ samm:property :partRoleDescription; samm:optional true ] 
+      [ samm:property :partRoleCategory; samm:optional true ] 
+      [ samm:property :digitalMasterDataID; samm:optional true] 
+      ) .
+
+:ownerRoleId a samm:Property ;
+   samm:preferredName "Owner Role Identifier"@en ;
+   samm:description "The unique identifier of the PartRole within the role owner's context. This identifier denotes the PartRole itself and must not be used as an identifier of PartTypes or PartInstances that may assume or realize the PartRole."@en ;
+   samm:characteristic :PartIdCharacteristic ;
+   samm:exampleValue "ENG-SYS-4711-ROLE-0007" .
+
+:nameAtOwner a samm:Property ;
+   samm:preferredName "Name at Owner"@en ;
+   samm:description "The name of the PartRole as assigned by the role owner in the relevant engineered-system context."@en ;
+   samm:characteristic samm-c:Text ;
+   samm:exampleValue "Front left wheel carrier fastening role" .
+
+:partRoleDescription a samm:Property ;
+   samm:preferredName "Part Role Description"@en ;
+   samm:description "A free-text description of the intended realization represented by the PartRole."@en ;
+   samm:characteristic samm-c:Text ;
+   samm:exampleValue "Intended fastening role for connecting the front left wheel carrier to the axle assembly." .
+
+:partRoleCategory a samm:Property ;
+   samm:preferredName "Part Role Category"@en ;
+   samm:description "A categorisation of the PartRole according to an agreed categorisation scheme."@en ;
+   samm:characteristic samm-c:Text ;
+   samm:exampleValue "mechanical" .
+
+:digitalMasterDataID a samm:Property ;
+   samm:preferredName "Digital Master Data ID"@en ;
+   samm:description "Optional identifier of the digital master data record associated with the PartRole, represented as a UUID v4."@en ;
+   samm:characteristic :UuidV4Trait ;
+   samm:exampleValue "48878d48-6f1d-47f5-8ded-a441d0d879df" .
+
+#######################################################################
+# TRAITS AND CONSTRAINTS (Defined Locally)
+#######################################################################
+
+:UuidV4Trait a samm-c:Trait ;
+   samm:preferredName "UUID v4 Trait"@en ;
+   samm:description "A trait ensuring the string is a valid UUID v4."@en ;
+   samm-c:baseCharacteristic samm-c:Text ;
+   samm-c:constraint :UuidV4RegularExpression .
+
+:UuidV4RegularExpression a samm-c:RegularExpressionConstraint ;
+   samm:preferredName "UUID v4 Regular Expression"@en ;
+   samm:description "Regular expression for a UUID v4."@en ;
+   samm:value "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-4[0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$" .
