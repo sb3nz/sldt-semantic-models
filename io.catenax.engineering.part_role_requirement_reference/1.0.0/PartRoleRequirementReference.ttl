@@ -1,0 +1,78 @@
+#######################################################################
+# Copyright (c) 2026 Deutsches Zentrum für Luft- und Raumfahrt e.V. (DLR)
+# Copyright (c) 2026 COMPANY A
+# Copyright (c) 2026 COMPANY B
+# Copyright (c) 2026 COMPANY C
+# Copyright (c) 2026 COMPANY D
+#
+# See the NOTICE file(s) distributed with this work for additional
+# information regarding copyright ownership.
+#
+# This work is made available under the terms of the
+# Creative Commons Attribution 4.0 International (CC-BY-4.0) license,
+# which is available at
+# https://creativecommons.org/licenses/by/4.0/legalcode.
+#
+# SPDX-License-Identifier: CC-BY-4.0
+#######################################################################
+
+@prefix samm: <urn:samm:org.eclipse.esmf.samm:meta-model:2.2.0#> .
+@prefix samm-c: <urn:samm:org.eclipse.esmf.samm:characteristic:2.2.0#> .
+@prefix : <urn:samm:io.catenax.part_role_requirement_reference:1.0.0#> .
+
+:PartRoleRequirementReference a samm:Aspect ;
+   samm:preferredName "Part Role Requirement Reference"@en ;
+   samm:description "References to requirements allocated to the Part Role identified by globalAssetId. A reference records an allocation of engineering intent; it does not assert requirement satisfaction, approval or release. Full requirement content is maintained separately."@en ;
+   samm:properties ( 
+      :globalAssetId 
+      :requirementReferences
+      ) ;
+   samm:operations ( ) ;
+   samm:events ( ) .
+
+:requirementReferences a samm:Property ;
+   samm:preferredName "Requirement References"@en ;
+   samm:description "An unordered set of references to requirements allocated to this Part Role. An empty set means that no references are supplied in this payload; it does not establish that no requirements apply."@en ;
+   samm:characteristic :RequirementReferenceSet .
+
+:RequirementReferenceSet a samm-c:Set ;
+   samm:preferredName "Requirement Reference Set"@en ;
+   samm:description "A set of requirement references, each optionally identifying an exact requirement version."@en ;
+   samm:dataType :RequirementReferenceEntity .
+
+:RequirementReferenceEntity a samm:Entity ;
+   samm:preferredName "Requirement Reference"@en ;
+   samm:description "A reference to a requirement and, optionally, its exact version. When versionId is supplied, it must identify a version of the requirement identified by requirementId. When omitted, the version is unspecified; no latest-version, approval or release selection is implied."@en ;
+   samm:properties ( 
+      :requirementId 
+      [ samm:property :versionId ; samm:optional true ] 
+      ) .
+
+:requirementId a samm:Property ;
+   samm:preferredName "Requirement ID"@en ;
+   samm:description "The identifier of the referenced requirement, represented by a UUID URN valid for the Catena-X dataspace. Corresponds to requirementId in the Requirements aspect model; it is not a tool-local foreignId."@en ;
+   samm:see <urn:samm:io.catenax.requirements:2.0.0#requirementId> ;
+   samm:characteristic :UuidV4UrnTrait ;
+   samm:exampleValue "urn:uuid:48878d48-6f1d-47f5-8ded-a441d0d879df" .
+
+:versionId a samm:Property ;
+   samm:preferredName "Version ID"@en ;
+   samm:description "The identifier of the exact referenced requirement version, represented by a UUID URN valid for the Catena-X dataspace. Corresponds to requirementInformation.version.versionId in the Requirements payload."@en ;
+   samm:see <urn:samm:io.catenax.requirements:2.0.0#versionId> ;
+   samm:characteristic :UuidV4UrnTrait ;
+   samm:exampleValue "urn:uuid:7a6c2f18-4b93-4e25-9d71-8c0f6a2b530e" .
+
+#######################################################################
+# TRAITS AND CONSTRAINTS (Defined Locally)
+#######################################################################
+
+:UuidV4UrnTrait a samm-c:Trait ;
+   samm:preferredName "UUID v4 URN Trait"@en ;
+   samm:description "A UUID version 4 expressed as a URN for referencing a requirement or its exact version."@en ;
+   samm-c:baseCharacteristic samm-c:Text ;
+   samm-c:constraint :UuidV4UrnRegularExpression .
+
+:UuidV4UrnRegularExpression a samm-c:RegularExpressionConstraint ;
+   samm:preferredName "UUID v4 URN Regular Expression"@en ;
+   samm:description "Validates a UUID version 4 with the urn:uuid: prefix."@en ;
+   samm:value "^urn:uuid:[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-4[0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$" .
