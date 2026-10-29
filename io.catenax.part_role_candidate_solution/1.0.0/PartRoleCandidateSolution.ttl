@@ -51,7 +51,7 @@
       :candidateSolutionId
       :name
       [ samm:property :description; samm:optional true ]
-      [ samm:property :providerId; samm:optional true ]
+      [ samm:property :providerId; samm:optional true ] #braucht es das wenn ich die globalAssetID habe?
       [ samm:property :conceptReference; samm:optional true ]
       [ samm:property :referencedPartTypeGlobalAssetId; samm:optional true ]
       [ samm:property :contextAssessments; samm:optional true ]
