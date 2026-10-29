@@ -1,4 +1,4 @@
-# PartRoleCandidateSolution — modelling proposal and review register
+# PartRoleCandidateSolution - modelling proposal and review register
 
 **Status:** Discussion draft; not an adopted Catena-X model.  
 **Proposed model URN:** `urn:samm:io.catenax.part_role_candidate_solution:1.0.0#PartRoleCandidateSolution`   
@@ -48,43 +48,43 @@ The model **does not** prescribe the decomposition or usage of roles, requiremen
 
 ## 3. Review points to resolve before standardization
 
-### Priority 1 — changes that could reshape the model
+### Priority 1 - changes that could reshape the model
 
-- [x] **R1 — Candidate identifier and ownership.** Is `candidateSolutionId` scoped by PartRole sufficient? Who assigns it when several suppliers propose solutions: the PartRole owner or each proposal provider? Prevent collisions and clarify whether there is one authoritative aspect or several independently offered submodels.
+- [ ] **R1 - Candidate identifier and ownership.** Is `candidateSolutionId` scoped by PartRole sufficient? Who assigns it when several suppliers propose solutions: the PartRole owner or each proposal provider? Prevent collisions and clarify whether there is one authoritative aspect or several independently offered submodels.
 
   - *Should be sufficient when assigned by the owner of the PartRole. It is not the unique identifier in the dataspace but an individual identifier according to the role owner.*
 
-- [x] **R2 — One referenced PartType or several?** The draft permits *zero or one* PartType per candidate. If alternatives map to different types, represent them as distinct candidates. If a *single* candidate denotes a multi-part solution, should it have a structured PartType-reference collection, or should that be modeled through a dedicated concept/assembly artifact?
+- [ ] **R2 - One referenced PartType or several?** The draft permits *zero or one* PartType per candidate. If alternatives map to different types, represent them as distinct candidates. If a *single* candidate denotes a multi-part solution, should it have a structured PartType-reference collection, or should that be modeled through a dedicated concept/assembly artifact?
 
   - *Does it necessarily point at a PartType? I guess yes...*
   - *Any multi-part solution should optimally be strucutred as a dedicated assembly artifact with respective varying substructure and meta-information.*
 
-- [x] **R3 — Context identity and applicability.** Is `contextId` a stable reference to an external configuration/derivative/variant object? Are `variantId`, `derivativeId`, and `configurationId` useful secondary keys or redundant? How is release/version of that context resolved? Avoid treating absence of context as universally applicable.
+- [ ] **R3 - Context identity and applicability.** Is `contextId` a stable reference to an external configuration/derivative/variant object? Are `variantId`, `derivativeId`, and `configurationId` useful secondary keys or redundant? How is release/version of that context resolved? Avoid treating absence of context as universally applicable.
 
   - *There is no "configuration/derivate/variant" object available yet.*
   - *There is no unambiguous "variantId", "derivateId" or "configurationId" available yet. How does the digitalMasterData specify and can that be reused?*
 
-- [x] **R4 — Two independent status dimensions or one?** The draft splits the original `solutionStatus="under-evaluation"` into `evaluationStatus` (`notEvaluated`, `underEvaluation`, `suitable`, `unsuitable`) and `decisionStatus` (`open`, `notSelected`, `selected`, `confirmed`, `withdrawn`). Is this distinction needed for interoperable use? Agree on meanings and permissible combinations.
+- [ ] **R4 - Two independent status dimensions or one?** The draft splits the original `solutionStatus="under-evaluation"` into `evaluationStatus` (`notEvaluated`, `underEvaluation`, `suitable`, `unsuitable`) and `decisionStatus` (`open`, `notSelected`, `selected`, `confirmed`, `withdrawn`). Is this distinction needed for interoperable use? Agree on meanings and permissible combinations.
 
   - *Enumerations must be checked/conformed.*
   - *Both seems procedurally useful.*
 
-- [x] **R5 — Meaning of confirmation.** Does `confirmed` mean an engineering selection decision, supplier acceptance, a binding PartType assignment, or an approval/release event? In this draft it means **stronger confirmation of a role-to-solution choice, not approval/release**. `hasConfirmedPartType` can be derived only if a PartType reference is present.
+- [ ] **R5 - Meaning of confirmation.** Does `confirmed` mean an engineering selection decision, supplier acceptance, a binding PartType assignment, or an approval/release event? In this draft it means **stronger confirmation of a role-to-solution choice, not approval/release**. `hasConfirmedPartType` can be derived only if a PartType reference is present.
 
   - *"selected" could mean: This is a candidate solution that was evaluated and is further considered a  and has not been disregarded. Conversely, everything that was "notSelected" is not further elaborated in product development. However, a selected candidate does not secessarily have to reference a PartType yet.*
   - *"confirmed" could mean: This candidate is a confirmed engineering design that is realized as an identifiably PartType. It needs the reference to this PartType but makes no statement about its further release or approval.*
   - *but what about concept design approvals/releases in between "selected" and "confirmed"? Maybe a shared aspect is necessary here. Same discussion/idea is ongoing in the DEMD Aspect Model.*
 
-- [ ] **R6 — Selection multiplicity.** Can multiple solutions have `selected`/`confirmed` for the same role and context, e.g. alternatives, planned second-source suppliers, or joint solutions? If this is prohibited, the constraint must be made explicit; SAMM field cardinality alone will not ensure it.
+- [ ] **R6 - Selection multiplicity.** Can multiple solutions have `selected`/`confirmed` for the same role and context, e.g. alternatives, planned second-source suppliers, or joint solutions? If this is prohibited, the constraint must be made explicit; SAMM field cardinality alone will not ensure it.
 
-### Priority 2 — detail and governance choices
+### Priority 2 - detail and governance choices
 
-- [ ] **R7 — Optional proposals without assessments.** This draft allows candidates with no `contextAssessments`. Is that useful for early conceptual design, or should a default status always be required?
-- [ ] **R8 — Proposal provider.** Keep `providerId` as BPNL of the proposer, not manufacturer or owner. Could data-offer metadata already provide trustworthy attribution? If several contributors edit one candidate, do we need proposal provenance beyond a single provider?
-- [ ] **R9 — Concept links and evidence.** Are `conceptReference` and `decisionReference` enough, or is a typed reference needed for interoperable tool-to-tool navigation? Should a `confirmed` decision require `decisionReference`?
-- [ ] **R10 — Status evolution/history.** The model describes current assessments per context, not a decision history. Do consumers need historical selections, timestamps or audit trails? If yes, consider a separate decision/event model rather than expanding the first Industry Core model.
-- [ ] **R11 — Reverse navigation / search.** Starting from a PartType, finding PartRoles that reference it requires a cross-role query/index or optional reverse view. Do not place `ownerRoleId` among PartType `specificAssetIds` merely to support this search.
-- [ ] **R12 — SAMM dependencies and field naming.** Decide final SAMM version and shared namespaces; verify `ext-ic:globalAssetId`, `ext-uuid:UuidV4Trait`, and `ext-number:BpnlTrait` in the target Semantic Hub. Align with naming conventions (`globalAssetId`, `candidateSolutionId`, etc.).
+- [ ] **R7 - Optional proposals without assessments.** This draft allows candidates with no `contextAssessments`. Is that useful for early conceptual design, or should a default status always be required?
+- [ ] **R8 - Proposal provider.** Keep `providerId` as BPNL of the proposer, not manufacturer or owner. Could data-offer metadata already provide trustworthy attribution? If several contributors edit one candidate, do we need proposal provenance beyond a single provider?
+- [ ] **R9 - Concept links and evidence.** Are `conceptReference` and `decisionReference` enough, or is a typed reference needed for interoperable tool-to-tool navigation? Should a `confirmed` decision require `decisionReference`?
+- [ ] **R10 - Status evolution/history.** The model describes current assessments per context, not a decision history. Do consumers need historical selections, timestamps or audit trails? If yes, consider a separate decision/event model rather than expanding the first Industry Core model.
+- [ ] **R11 - Reverse navigation / search.** Starting from a PartType, finding PartRoles that reference it requires a cross-role query/index or optional reverse view. Do not place `ownerRoleId` among PartType `specificAssetIds` merely to support this search.
+- [ ] **R12 - SAMM dependencies and field naming.** Decide final SAMM version and shared namespaces; verify `ext-ic:globalAssetId`, `ext-uuid:UuidV4Trait`, and `ext-number:BpnlTrait` in the target Semantic Hub. Align with naming conventions (`globalAssetId`, `candidateSolutionId`, etc.).
 
 ## 4. Suggested business rules (not all enforceable using SAMM alone)
 
