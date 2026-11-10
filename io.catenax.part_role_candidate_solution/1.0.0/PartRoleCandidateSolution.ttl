@@ -30,7 +30,10 @@
 :PartRoleCandidateSolution a samm:Aspect ;
    samm:preferredName "Part Role Candidate Solution"@en ;
    samm:description "Describes possible solutions for fulfilling the PartRole identified by globalAssetId. Candidate solutions may exist before a PartType is available and may optionally reference an existing PartType. Assessment and selection are recorded for explicitly identified engineering contexts. Candidate references do not constitute identities of the PartRole or PartType."@en ;
-   samm:properties ( ext-ic:globalAssetId :candidateSolutions ) ;
+   samm:properties ( 
+      ext-ic:globalAssetId 
+      :candidateSolutions 
+      ) ;
    samm:operations ( ) ;
    samm:events ( ) .
 
@@ -52,8 +55,8 @@
       :name
       [ samm:property :description; samm:optional true ]
       [ samm:property :providerId; samm:optional true ] #braucht es das wenn ich die globalAssetID habe?
-      [ samm:property :conceptReference; samm:optional true ]
-      [ samm:property :referencedPartTypeGlobalAssetId; samm:optional true ]
+      [ samm:property :conceptReference; samm:optional true ] # a) good for ideation. List of? b) Good for i.e. morphological chart --> Need more description and Functional view ().
+      [ samm:property :referencedPartTypeGlobalAssetId; samm:optional true ] # nur optional ? Müsste doch mandatory sein...
       [ samm:property :contextAssessments; samm:optional true ]
    ) .
 
@@ -133,7 +136,7 @@
    samm:description "Characteristic encapsulating a reference to the applicable engineering context and optional query-friendly identifiers."@en ;
    samm:dataType :EngineeringContextEntity .
 
-:EngineeringContextEntity a samm:Entity ;
+:EngineeringContextEntity a samm:Entity ; #is that needed here or given by other PartRole submodels information (Masterdata?). Nach aktuellem IC und "Context-based provisioning" geschieht das nicht hier, weil candidateSolutions keine PartRole-unabhängigen Aspekte sind.
    samm:preferredName "Engineering Context Entity"@en ;
    samm:description "Identifiers used to distinguish the engineering applicability of an assessment. The contextId is mandatory; variant, derivative, and configuration identifiers are optional descriptive keys in the applicable engineering namespace."@en ;
    samm:properties (
